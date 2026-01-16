@@ -134,9 +134,6 @@ int main ()
     InitWindow(windowWidth, windowHeight, title.c_str());
     SetWindowMinSize(200, 200);
 
-    // int FPS = 120;
-    // SetTargetFPS(FPS);
-
     vector<Point> points;
 
     while (!WindowShouldClose())

@@ -6,7 +6,6 @@
 #include <string>
 #include <cstddef>
 #include <vector>
-#include <random>
 
 #include <iostream>
 
@@ -18,8 +17,8 @@ using namespace std;
 
 bool showGui = false;
 
-float radius = 10.0f; // Example radius value
-float mass = 10.0f;  // Example mass value
+float radius = 10.0f;
+float mass = 10.0f;
 
 float moveVectorX = 0.0f, moveVectorY = 0.0f;
 
@@ -41,33 +40,11 @@ void DrawGUI(Vector2 position)
 
     GuiSliderBar((Rectangle){ position.x + 150, position.y + 40, 200, 50}, "Radius", TextFormat("%.0f", radius), &radius, 0, 200);
 
-    // if(GuiButton(Rectangle{position.x + 10, position.y + 40, 140.0f, 30.0f}, "Increase Radius"))
-    // {
-    //     radius += 1.0f;
-    // }
-    // if(GuiButton(Rectangle{position.x + 150, position.y + 40, 140.0f, 30.0f}, "Decrease Radius"))
-    // {
-    //     radius -= 1.0f;
-    //     if(radius < 1.0f) radius = 1.0f;
-    // }
-    // DrawText(TextFormat("Radius: %.2f", radius), (int)position.x + 10, (int)position.y + 80, 20, WHITE);
-
-
     GuiSliderBar((Rectangle){ position.x + 150, position.y + 120, 200, 50}, "Mass", TextFormat("%.0f", mass, 30), &mass, 0, 200);
 
-
     GuiSliderBar((Rectangle){ position.x + 150, position.y + 200, 200, 60}, "X vector", TextFormat("%.0f", moveVectorX, 30), &moveVectorX, -50, 50);
+    
     GuiSliderBar((Rectangle){ position.x + 150, position.y + 260, 200, 60}, "Y vector", TextFormat("%.0f", moveVectorY, 30), &moveVectorY, -50, 50);
-    // if(GuiButton(Rectangle{position.x + 10, position.y + 120, 140.0f, 30.0f}, "Increase Mass"))
-    // {
-    //     mass += 1.0f;
-    // }
-    // if(GuiButton(Rectangle{position.x + 150, position.y + 120, 140.0f, 30.0f}, "Decrease Mass"))
-    // {
-    //     mass -= 1.0f;
-    //     if(mass < 1.0f) mass = 1.0f;
-    // }
-    // DrawText(TextFormat("Mass: %.2f", mass), (int)position.x + 10, (int)position.y + 160, 20, WHITE);
 
     if(GuiButton(Rectangle{position.x + 10.0f, position.y + guiBlock.height - 70.0f, 380.0f, 50.0f}, "Close GUI"))
     {
@@ -86,7 +63,9 @@ void colision(std::vector<Point> &points)
                 Vector2 posI = points[i].getPosition();
                 Vector2 posJ = points[j].getPosition();
                 Vector2 diff = { posJ.x - posI.x, posJ.y - posI.y };
+
                 float dist = sqrtf(diff.x * diff.x + diff.y * diff.y);
+                
                 if (dist == 0.0f)
                 {
                     diff = { 1.0f, 0.0f };
@@ -94,6 +73,7 @@ void colision(std::vector<Point> &points)
                 }
                 
                 float overlap = rTotal - dist;
+                
                 if (overlap <= 0.0f) continue;
                 
                 float totalMass = points[i].getMass() + points[j].getMass();
@@ -110,33 +90,6 @@ void colision(std::vector<Point> &points)
             }
 }
 
-
-vector<Point> stars;
-
-void createStars(int width, int height)
-{
-    random_device rd;
-    mt19937 mt(rd());
-    uniform_int_distribution<int> rand(100, 1000);
-    uniform_int_distribution<int> randX(0, width);
-    uniform_int_distribution<int> randY(0, height);
-
-    uniform_real_distribution<float> r(1.0f, 3.0f);
-
-    for(size_t i = 0; i < stars.size(); i++)
-    {
-        stars.emplace_back(Point{(Vector2){(float)randX(mt), (float)randY(mt)}, (float)r(mt), (float)1.0f, (Vector2){ 0.0f, 0.0f }});
-    }
-}
-
-void drawStars()
-{
-    for(auto s : stars)
-    {
-        DrawCircleV(s.getPosition(), s.getRadius(), WHITE);
-    }
-}
-
 void calcGravity(vector<Point> &points)
 {
     for(size_t i = 0; i < points.size(); i++)
@@ -149,20 +102,18 @@ void calcGravity(vector<Point> &points)
 
             float dx = points[j].getPosition().x - points[i].getPosition().x;
             float dy = points[j].getPosition().y - points[i].getPosition().y;
+
             float distSq = dx*dx + dy*dy;
             float dist = sqrt(distSq);
 
-            if(dist < 5.0f) dist = 5.0f; // Zabezpieczenie
+            if(dist < 5.0f) dist = 5.0f;
 
-            // F = G * m1 * m2 / r^2
-            // a = F / m1  =>  a = G * m2 / r^2
             float force = (G * points[j].getMass()) / (dist * dist);
 
             ax += force * (dx / dist);
             ay += force * (dy / dist);
         }
-
-        // 2. Zaktualizuj POZYCJĘ o prędkość
+ 
         points[i].getPosition().x += ax;
         points[i].getPosition().y += ay;
     }
@@ -183,8 +134,6 @@ int main ()
     InitWindow(windowWidth, windowHeight, title.c_str());
     SetWindowMinSize(200, 200);
 
-    createStars(windowWidth, windowHeight);
-
     // int FPS = 120;
     // SetTargetFPS(FPS);
 
@@ -198,8 +147,6 @@ int main ()
         BeginDrawing();
 
             ClearBackground(BLACK);
-
-            drawStars();
 
             if(!symulationRunning)
             {

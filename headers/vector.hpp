@@ -27,6 +27,8 @@ public:
     void calcVector(Vector2 move);
 
     void drawVector() const;
+
+    void updateArrow(Vector2 move);
 };
 
 #endif

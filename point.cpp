@@ -8,6 +8,8 @@ std::string waterS = "water_";
 std::string landS = "land_";
 std::string cloudS = "cloud_";
 
+Point::Point() { }
+
 Point::Point(Vector2 position, float radius, float mass, Vector2 moveVector) : position(position), radius(radius), mass(mass), moveVector(moveVector)
 {
     imagesCount = 2;
@@ -34,11 +36,13 @@ Point::Point(Vector2 position, float radius, float mass, Vector2 moveVector) : p
     vector = Vector(position, (Vector2){ position.x + moveVector.x, position.y + moveVector.y });
 
     vector.calcVector(moveVector);
+
+    outlineColor = WHITE;
 }
 
 void Point::draw() const
 {
-    DrawCircleLinesV(position, radius, WHITE);
+    DrawCircleLinesV(position, radius, outlineColor);
 
     DrawTextureEx(waterTexture, (Vector2){ position.x - radius, position.y - radius }, 0.0f, (2 * radius / 16.0f) , WHITE);
     DrawTextureEx(landTexture, (Vector2){ position.x - radius, position.y - radius }, 0.0f, (2 * radius / 16.0f) , WHITE);

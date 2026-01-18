@@ -6,10 +6,11 @@
 #include <string>
 #include <cstddef>
 #include <vector>
-
-#include <iostream>
+#include <algorithm>
 
 #include "headers/point.hpp"
+
+#include "headers/black_hole.hpp"
 
 constexpr float G = 6.67f * 10.0f;
 
@@ -22,13 +23,13 @@ float mass = 10.0f;
 
 float moveVectorX = 0.0f, moveVectorY = 0.0f;
 
-Rectangle guiBlock = {0.0f, 0.0f, 400.0f, 400.0f};
+Rectangle guiBlock = {0.0f, 0.0f, 400.0f, 800.0f};
 
 Vector2 mousePos;
 
 bool symulationRunning = false;
 
-void DrawGUI(Vector2 position)
+void DrawGUI(Vector2 position, vector<BlackHole> &blackHoles)
 {
     guiBlock.x = position.x;
     guiBlock.y = position.y;
@@ -45,6 +46,12 @@ void DrawGUI(Vector2 position)
     GuiSliderBar((Rectangle){ position.x + 150, position.y + 200, 200, 60}, "X vector", TextFormat("%.0f", moveVectorX, 30), &moveVectorX, -75, 75);
     
     GuiSliderBar((Rectangle){ position.x + 150, position.y + 260, 200, 60}, "Y vector", TextFormat("%.0f", moveVectorY, 30), &moveVectorY, -75, 75);
+
+    if(GuiButton(Rectangle{position.x + 10.0f, position.y + guiBlock.height - 160.0f, 380.0f, 50.0f}, "BLACK HOLE"))
+    {
+        blackHoles.emplace_back((BlackHole){ mousePos });
+        showGui = false;
+    }
 
     if(GuiButton(Rectangle{position.x + 10.0f, position.y + guiBlock.height - 70.0f, 380.0f, 50.0f}, "Close GUI"))
     {
@@ -90,9 +97,25 @@ void colision(std::vector<Point> &points)
 
                 points[i].getVectorObject().updateStartPos( points[i].getPosition() );
                 points[i].getVectorObject().updateEndPos((Vector2){ points[i].getPosition().x + points[i].getMoveVector().x, points[i].getPosition().y + points[i].getMoveVector().y });
+                points[i].getVectorObject().updateArrow(points[i].getMoveVector());
 
                 points[j].getVectorObject().updateStartPos( points[j].getPosition() );
                 points[j].getVectorObject().updateEndPos((Vector2){ points[j].getPosition().x + points[j].getMoveVector().x, points[j].getPosition().y + points[j].getMoveVector().y });
+                points[j].getVectorObject().updateArrow(points[j].getMoveVector());
+            }
+}
+
+void blackHoleColision(std::vector<Point> &points, vector<BlackHole> &blackHoles)
+{
+    for (size_t i = 0; i < blackHoles.size(); i++)
+        for (size_t j = 0; j < points.size(); j++)
+            if(CheckCollisionCircles(blackHoles[i].getPosition(), blackHoles[i].getRadius(), points[j].getPosition(), points[j].getRadius()))
+            {
+                Point temp = points[i];
+                points[i] = points[points.size() - 1];
+                points[points.size() - 1] = temp;
+
+                points.erase(points.begin() + i);
             }
 }
 
@@ -125,6 +148,57 @@ void calcGravity(vector<Point> &points)
     }
 }
 
+void calcBlackHoleGravity(vector<Point> &points, vector<BlackHole> &blackHoles)
+{
+    for(size_t i = 0; i < points.size(); i++)
+    {
+        float ax = 0, ay = 0;
+
+        for(size_t j = 0; j < blackHoles.size(); j++)
+        {
+            float dx = blackHoles[j].getPosition().x - points[i].getPosition().x;
+            float dy = blackHoles[j].getPosition().y - points[i].getPosition().y;
+
+            float distSq = dx*dx + dy*dy;
+            float dist = sqrt(distSq);
+
+            if(dist < 5.0f) dist = 5.0f;
+
+            float force = (G * blackHoles[j].getMass()) / (dist * dist);
+
+            ax += force * (dx / dist);
+            ay += force * (dy / dist);
+        }
+ 
+        points[i].getPosition().x += ax;
+        points[i].getPosition().y += ay;
+    }
+}
+
+void drawPoints(vector<Point> &points)
+{
+    for(size_t i = 0; i < points.size(); ++i)
+    {
+        points[i].draw();
+        colision(points);
+        // drawVectors(points);
+    }
+}
+
+void drawBalckHoles(vector<Point> &points, vector<BlackHole> &blackHoles)
+{
+    for(size_t i = 0; i < blackHoles.size(); i++)
+        blackHoles[i].draw();
+
+    blackHoleColision(points, blackHoles);
+}
+
+// void undo(vector<Point> &points)
+// {
+//     if((points.size() - 1) >= 0)
+//         points[points.size() - 1].~Point();
+// }
+
 int main ()
 {
     int windowWidth = GetScreenWidth();
@@ -136,11 +210,15 @@ int main ()
     SetWindowMinSize(200, 200);
 
     vector<Point> points;
+    vector<BlackHole> blackHoles;
+
+    // std::thread artist(drawPoints, std::ref(points));
 
     while (!WindowShouldClose())
     {
         if(IsKeyPressed(KEY_F11))
             ToggleFullscreen();
+        
 
         BeginDrawing();
 
@@ -155,24 +233,24 @@ int main ()
                 }
             }
 
-            for(size_t i = 0; i < points.size(); ++i)
-            {
-                points[i].draw();
-                colision(points);
-                // drawVectors(points);
-            }
+            // artist.join();
+            drawPoints(points);
+            drawBalckHoles(points, blackHoles);
 
             if(showGui && !symulationRunning)
             {
-                DrawGUI(mousePos);
+                DrawGUI(mousePos, blackHoles);
             }
             else
             {
-                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !symulationRunning)
+                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
                 {
                     mousePos = GetMousePosition();
                     points.emplace_back(Point{mousePos, radius, mass, (Vector2){ moveVectorX, moveVectorY }});
                 }
+
+                // if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyDown(KEY_Z))
+                //     undo(points);
             }
 
             if(IsKeyPressed(KEY_SPACE))
@@ -181,6 +259,7 @@ int main ()
             if(symulationRunning)
             {
                 calcGravity(points);
+                calcBlackHoleGravity(points, blackHoles);
                 for(size_t i = 0; i < points.size(); i++)
                     points[i].movePoint();
             }
@@ -195,6 +274,10 @@ int main ()
             //              (Vector2){ 5.0f, 10.0f },
             //              (Vector2){ 10.0f, 5.0f }, WHITE);
 
-        EndDrawing();   
+        EndDrawing(); 
+    
+        // artist.~thread();
     }
+
+    return 0;
 }

@@ -59,3 +59,8 @@ void Vector::drawVector() const
     DrawLineV(startPos, endPos, WHITE);
     DrawTriangle(vertex1, vertex3, vertex2, WHITE);
 }
+
+void Vector::updateArrow(Vector2 move)
+{
+    Vector::calcVector(move);
+}

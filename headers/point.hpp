@@ -1,8 +1,14 @@
 #pragma once
 
+#ifndef POINT_HPP
+#define POINT_HPP
+
 #include <raylib.h>
 
+#include <cstddef>
 #include <vector>
+
+#include "headers/vector.hpp"
 
 class Point
 {
@@ -15,8 +21,14 @@ private:
 
     Vector2 moveVector;
 
-    std::vector<Color> colors;
-    Color color;
+    size_t imagesCount;
+
+    Texture2D waterTexture, landTexture, cloudsTexture;
+
+    Vector vector;
+
+    // std::vector<Color> colors;
+    // Color color;
 
 public:
     Point(Vector2 position, float radius = 10.0f, float mass = 10.0f, Vector2 moveVector = { 0.0f, 0.0f });
@@ -36,4 +48,8 @@ public:
     Vector2 &getMoveVector() { return moveVector; };
 
     void movePoint();
+
+    Vector &getVectorObject() { return vector; };
 };
+
+#endif

@@ -38,13 +38,13 @@ void DrawGUI(Vector2 position)
 
     GuiSetStyle(DEFAULT, TEXT_SIZE, 30);
 
-    GuiSliderBar((Rectangle){ position.x + 150, position.y + 40, 200, 50}, "Radius", TextFormat("%.0f", radius), &radius, 0, 200);
+    GuiSliderBar((Rectangle){ position.x + 150, position.y + 40, 200, 50}, "Radius", TextFormat("%.0f", radius), &radius, 1, 200);
 
-    GuiSliderBar((Rectangle){ position.x + 150, position.y + 120, 200, 50}, "Mass", TextFormat("%.0f", mass, 30), &mass, 0, 200);
+    GuiSliderBar((Rectangle){ position.x + 150, position.y + 120, 200, 50}, "Mass", TextFormat("%.0f", mass, 30), &mass, 1, 200);
 
-    GuiSliderBar((Rectangle){ position.x + 150, position.y + 200, 200, 60}, "X vector", TextFormat("%.0f", moveVectorX, 30), &moveVectorX, -50, 50);
+    GuiSliderBar((Rectangle){ position.x + 150, position.y + 200, 200, 60}, "X vector", TextFormat("%.0f", moveVectorX, 30), &moveVectorX, -75, 75);
     
-    GuiSliderBar((Rectangle){ position.x + 150, position.y + 260, 200, 60}, "Y vector", TextFormat("%.0f", moveVectorY, 30), &moveVectorY, -50, 50);
+    GuiSliderBar((Rectangle){ position.x + 150, position.y + 260, 200, 60}, "Y vector", TextFormat("%.0f", moveVectorY, 30), &moveVectorY, -75, 75);
 
     if(GuiButton(Rectangle{position.x + 10.0f, position.y + guiBlock.height - 70.0f, 380.0f, 50.0f}, "Close GUI"))
     {
@@ -87,6 +87,12 @@ void colision(std::vector<Point> &points)
 
                 points[j].getPosition().x += norm.x * moveJ;
                 points[j].getPosition().y += norm.y * moveJ;
+
+                points[i].getVectorObject().updateStartPos( points[i].getPosition() );
+                points[i].getVectorObject().updateEndPos((Vector2){ points[i].getPosition().x + points[i].getMoveVector().x, points[i].getPosition().y + points[i].getMoveVector().y });
+
+                points[j].getVectorObject().updateStartPos( points[j].getPosition() );
+                points[j].getVectorObject().updateEndPos((Vector2){ points[j].getPosition().x + points[j].getMoveVector().x, points[j].getPosition().y + points[j].getMoveVector().y });
             }
 }
 
@@ -117,11 +123,6 @@ void calcGravity(vector<Point> &points)
         points[i].getPosition().x += ax;
         points[i].getPosition().y += ay;
     }
-}
-
-void calcMouseGravity()
-{
-        
 }
 
 int main ()
@@ -158,6 +159,7 @@ int main ()
             {
                 points[i].draw();
                 colision(points);
+                // drawVectors(points);
             }
 
             if(showGui && !symulationRunning)
@@ -184,7 +186,14 @@ int main ()
             }
 
             DrawFPS(10, 10);
-            DrawText(TextFormat("Count: %d", points.size()), 10, 40, 20, DARKGREEN);            
+            DrawText(TextFormat("Count: %d", points.size()), 10, 40, 20, DARKGREEN);
+
+            string state = "Symulation: "; state += (symulationRunning ? "Running" : "Stoped");
+            DrawText(state.c_str(), 10, 70, 20, DARKGREEN);
+
+            // DrawTriangle((Vector2){ 1.0f, 1.0f }, 
+            //              (Vector2){ 5.0f, 10.0f },
+            //              (Vector2){ 10.0f, 5.0f }, WHITE);
 
         EndDrawing();   
     }

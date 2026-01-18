@@ -22,7 +22,7 @@ float mass = 10.0f;
 
 float moveVectorX = 0.0f, moveVectorY = 0.0f;
 
-Rectangle guiBlock = {0, 0, 400, 400};
+Rectangle guiBlock = {0.0f, 0.0f, 400.0f, 400.0f};
 
 Vector2 mousePos;
 

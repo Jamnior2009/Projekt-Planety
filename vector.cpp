@@ -33,7 +33,7 @@ void Vector::calcVector(Vector2 move)
 {
     // Normalize the move vector to get direction
     float len = sqrtf(move.x * move.x + move.y * move.y);
-    
+
     Vector2 direction = {move.x / len, move.y / len};
     
     // Get perpendicular vector
@@ -57,5 +57,5 @@ void Vector::calcVector(Vector2 move)
 void Vector::drawVector() const
 {
     DrawLineV(startPos, endPos, WHITE);
-    DrawTriangle(vertex1, vertex2, vertex3, WHITE);
+    DrawTriangle(vertex1, vertex3, vertex2, WHITE);
 }

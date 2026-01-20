@@ -178,11 +178,9 @@ void calcBlackHoleGravity(vector<Point> &points, vector<BlackHole> &blackHoles)
 void drawPoints(vector<Point> &points)
 {
     for(size_t i = 0; i < points.size(); ++i)
-    {
         points[i].draw();
-        colision(points);
-        // drawVectors(points);
-    }
+    
+    colision(points);
 }
 
 void drawBalckHoles(vector<Point> &points, vector<BlackHole> &blackHoles)

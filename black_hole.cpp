@@ -11,7 +11,7 @@ BlackHole::BlackHole(Vector2 position)
 {
     Point::getPosition() = position;
     Point::getRadius() = 5.0f;
-    Point::getMass() = 1000.0f;
+    Point::getMass() = 500.0f;
 
     Point::getOutlineColor() = PURPLE;
 }

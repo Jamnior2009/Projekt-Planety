@@ -12,7 +12,7 @@
 
 #include "headers/black_hole.hpp"
 
-constexpr float G = 6.67f * 10.0f;
+constexpr float G = 6.67f * 6.0f;
 
 using namespace std;
 
@@ -191,17 +191,11 @@ void drawBalckHoles(vector<Point> &points, vector<BlackHole> &blackHoles)
     blackHoleColision(points, blackHoles);
 }
 
-// void undo(vector<Point> &points)
-// {
-//     if((points.size() - 1) >= 0)
-//         points[points.size() - 1].~Point();
-// }
-
 int main ()
 {
     int windowWidth = GetScreenWidth();
     int windowHeight = GetScreenHeight();
-    string title = "Planets Simulation";
+    string title = "Planet Simulation";
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT);
     InitWindow(windowWidth, windowHeight, title.c_str());
@@ -209,8 +203,6 @@ int main ()
 
     vector<Point> points;
     vector<BlackHole> blackHoles;
-
-    // std::thread artist(drawPoints, std::ref(points));
 
     while (!WindowShouldClose())
     {
@@ -231,7 +223,6 @@ int main ()
                 }
             }
 
-            // artist.join();
             drawPoints(points);
             drawBalckHoles(points, blackHoles);
 
@@ -246,9 +237,6 @@ int main ()
                     mousePos = GetMousePosition();
                     points.emplace_back(Point{mousePos, radius, mass, (Vector2){ moveVectorX, moveVectorY }});
                 }
-
-                // if(IsKeyDown(KEY_LEFT_CONTROL) && IsKeyDown(KEY_Z))
-                //     undo(points);
             }
 
             if(IsKeyPressed(KEY_SPACE))
@@ -268,13 +256,12 @@ int main ()
             string state = "Symulation: "; state += (symulationRunning ? "Running" : "Stoped");
             DrawText(state.c_str(), 10, 70, 20, DARKGREEN);
 
-            // DrawTriangle((Vector2){ 1.0f, 1.0f }, 
-            //              (Vector2){ 5.0f, 10.0f },
-            //              (Vector2){ 10.0f, 5.0f }, WHITE);
+            DrawText("Controls: ", windowWidth - 160, windowHeight - 100, 20, WHITE);
+            // DrawText("Controls: ", windowWidth - 80, windowHeight - 50, 20, WHITE);
+            // DrawText("Controls: ", windowWidth - 80, windowHeight - 50, 20, WHITE);
+            // DrawText("Controls: ", windowWidth - 80, windowHeight - 50, 20, WHITE);
 
         EndDrawing(); 
-    
-        // artist.~thread();
     }
 
     return 0;

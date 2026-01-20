@@ -111,11 +111,11 @@ void blackHoleColision(std::vector<Point> &points, vector<BlackHole> &blackHoles
         for (size_t j = 0; j < points.size(); j++)
             if(CheckCollisionCircles(blackHoles[i].getPosition(), blackHoles[i].getRadius(), points[j].getPosition(), points[j].getRadius()))
             {
-                Point temp = points[i];
-                points[i] = points[points.size() - 1];
+                Point temp = points[j];
+                points[j] = points[points.size() - 1];
                 points[points.size() - 1] = temp;
 
-                points.erase(points.begin() + i);
+                points.erase(points.begin() + j);
             }
 }
 

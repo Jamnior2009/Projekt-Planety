@@ -256,10 +256,10 @@ int main ()
             string state = "Symulation: "; state += (symulationRunning ? "Running" : "Stoped");
             DrawText(state.c_str(), 10, 70, 20, DARKGREEN);
 
-            DrawText("Controls: ", windowWidth - 160, windowHeight - 100, 20, WHITE);
-            // DrawText("Controls: ", windowWidth - 80, windowHeight - 50, 20, WHITE);
-            // DrawText("Controls: ", windowWidth - 80, windowHeight - 50, 20, WHITE);
-            // DrawText("Controls: ", windowWidth - 80, windowHeight - 50, 20, WHITE);
+            DrawText("Controls: ", GetScreenWidth() - 420, GetScreenHeight() - 260, 22, WHITE);
+            DrawText("Left Mouse Button - place object", GetScreenWidth() - 420, GetScreenHeight() - 220, 22, WHITE);
+            DrawText("Right Mouse Button - open GUI", GetScreenWidth() - 420, GetScreenHeight() - 180, 22, WHITE);
+            DrawText("Escape - quit program", GetScreenWidth() - 420, GetScreenHeight() - 140, 22, WHITE);
 
         EndDrawing(); 
     }

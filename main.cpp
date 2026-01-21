@@ -232,7 +232,7 @@ int main ()
             }
             else
             {
-                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !symulationRunning)
                 {
                     mousePos = GetMousePosition();
                     points.emplace_back(Point{mousePos, radius, mass, (Vector2){ moveVectorX, moveVectorY }});
